@@ -16,6 +16,7 @@ class PlayerClient:
         self.p2pieces = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U'][::-1]
         #random.shuffle(self.p1pieces)
         #random.shuffle(self.p2pieces)
+
     @property
     def player_number(self) -> int:
         return self._player_number
@@ -63,12 +64,20 @@ class PlayerClient:
                 actions = list(
                 filter(
                 lambda i:PlayerProc.putable(board_2d, i),
-                PlayerProc.ordergen(
-                    # [chr(i) for i in range(65,86)][::-1][self.p1turn]
+                    PlayerProc.ordergen(
                     self.p1pieces.pop(0)
+                        )
+                    )
                 )
-            )
-            )
+            if not actions:
+                actions = list(
+                    filter(
+                        lambda i:PlayerProc.putable(board_2d, i),
+                        PlayerProc.ordergen(
+                            self.p1pieces
+                        )
+                    )
+                )               
                 print("actions1",actions)
             self.p1turn += 1
         else:
@@ -91,18 +100,31 @@ class PlayerClient:
                 )
             )
             )
+            if not actions:
+                actions = list(
+                filter(
+                    lambda i:PlayerProc.putable(board_2d, i),
+                    PlayerProc.ordergen(
+                        self.p2pieces
+                )
+            )
+            )
                 print("actions2",actions)
             self.p2turn += 1
 
         if len(actions) != 0:
             if self.player_number == 1:
+                if actions[-1][0] in self.p1pieces:
+                    self.p1pieces.remove(actions[-1][0])
                 return actions[-1]
             else:
+                if actions[0][0] in self.p2pieces:
+                    self.p2pieces.remove(actions[0][0])
                 return actions[0]
         else:
             # パスを選択
             return 'X000'
-    
+
     @staticmethod
     async def create(url: str, loop: asyncio.AbstractEventLoop) -> PlayerClient:
         socket = await websockets.connect(url)
