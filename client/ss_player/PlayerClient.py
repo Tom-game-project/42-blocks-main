@@ -27,10 +27,72 @@ class PlayerClient:
             await self._socket.send(action)
             if action == 'X000':
                 raise SystemExit
+    
+    def string_to_2d_array(self, string):
+        # 行に分割
+        rows = string.split("\n")
+        # 最初の行を無視
+        rows = rows[1:]
+        # 各行の最初の文字を無視して二次元配列を作成
+        array_2d = [list(row[1:]) for row in rows]
+        return array_2d
+    
+    # def find_all_dots_with_diagonal_o(self, board_2d):
+    #     rows = len(board_2d)
+    #     cols = len(board_2d[0]) if rows > 0 else 0
+    #     result = []
+
+    #     for i in range(rows):
+    #         for j in range(cols):
+    #             if board_2d[i][j] == '.':
+    #                 # Check diagonal directions for 'o'
+    #                 if (i > 0 and j > 0 and board_2d[i-1][j-1] == 'o') or \
+    #                 (i > 0 and j < cols - 1 and board_2d[i-1][j+1] == 'o') or \
+    #                 (i < rows - 1 and j > 0 and board_2d[i+1][j-1] == 'o') or \
+    #                 (i < rows - 1 and j < cols - 1 and board_2d[i+1][j+1] == 'o'):
+    #                     result.append((i, j))
+    #     return result
+
+    def find_all_dots_with_diagonal_o(self, board_2d):
+        rows = len(board_2d)
+        cols = len(board_2d[0]) if rows > 0 else 0
+        result = []
+
+        for i in range(rows):
+            for j in range(cols):
+                if board_2d[i][j] == '.':
+                    # Check diagonal directions for 'o'
+                    diagonal_o = (
+                        (i > 0 and j > 0 and board_2d[i-1][j-1] == 'o') or
+                        (i > 0 and j < cols - 1 and board_2d[i-1][j+1] == 'o') or
+                        (i < rows - 1 and j > 0 and board_2d[i+1][j-1] == 'o') or
+                        (i < rows - 1 and j < cols - 1 and board_2d[i+1][j+1] == 'o')
+                    )
+                    
+                    # Check if there's no 'o' in the four adjacent cells
+                    no_adjacent_o = (
+                        (i <= 0 or board_2d[i-1][j] != 'o') and  # up
+                        (i >= rows - 1 or board_2d[i+1][j] != 'o') and  # down
+                        (j <= 0 or board_2d[i][j-1] != 'o') and  # left
+                        (j >= cols - 1 or board_2d[i][j+1] != 'o')  # right
+                    )
+                    
+                    if diagonal_o and no_adjacent_o:
+                        result.append((i, j))
+                        
+        return result
 
     def create_action(self, board):
         actions: list[str]
         turn: int
+
+        print("now board\n")
+        print("aaa",board[5])
+        print(type(board))
+        board_2d = self.string_to_2d_array(board)
+        # print(board_2d)
+        put_available = self.find_all_dots_with_diagonal_o(board_2d)
+        print(f"Available positions to put: {put_available}")
 
         if self.player_number == 1:
             actions = self.p1Actions
