@@ -31,7 +31,23 @@ def is_piece_duplicate(board:np.array,order:np.ndarray) -> bool:
 
 
 def is_vertex_duplicate(board:np.array,order:np.ndarray) -> bool:
-    return
+    # 頂点を自分のピースと共有している
+    # ボードのサイズを取得
+    rows, cols = board.shape
+    
+    # 各1の位置についてチェック
+    for i, j in zip(*np.where(order == 1)):
+        # 上下左右の位置をチェック
+        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            # チェックするセルの位置
+            x, y = i + dx, j + dy
+            # そのセルがボード内かどうかを確認
+            if 0 <= x < rows and 0 <= y < cols:
+                # ボード上に1があればTrueを返す
+                if board[x, y] == 1:
+                    return True
+    # 1の周囲に1がない場合はFalseを返す
+    return False
 
 def is_edge_duplicate(board:np.array,order:np.ndarray) -> bool:
     return 
