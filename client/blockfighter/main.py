@@ -1,7 +1,7 @@
 import asyncio
 import sys
 
-from ss_player.PlayerClient import PlayerClient
+from blockfighter.PlayerClient import PlayerClient
 
 
 def main():

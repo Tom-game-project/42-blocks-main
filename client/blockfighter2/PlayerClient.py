@@ -2,7 +2,7 @@ from __future__ import annotations
 import asyncio
 import websockets
 import random
-import ss_player.PlayerProc as PlayerProc
+import blockfighter.PlayerProc as PlayerProc
 import numpy as np
 
 class PlayerClient:
@@ -10,14 +10,12 @@ class PlayerClient:
         self._loop = loop
         self._socket = socket
         self._player_number = player_number
-        self.p1Actions = ['U034', 'B037', 'J266', 'M149', 'O763', 'R0A3', 'F0C6', 'K113', 'T021', 'L5D2', 'G251', 'E291', 'D057', 'A053']
-        self.p2Actions = ['A0AA', 'B098', 'N0A5', 'L659', 'K33B', 'J027', 'E2B9', 'C267', 'U07C', 'M3AD', 'O2BB', 'R41C']
         self.p1turn = 0
         self.p2turn = 0
-        self.p1pieces = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U']
-        self.p2pieces = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U']
-        random.shuffle(self.p1pieces)
-        random.shuffle(self.p2pieces)
+        self.p1pieces = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U'][::-1]
+        self.p2pieces = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U'][::-1]
+        #random.shuffle(self.p1pieces)
+        #random.shuffle(self.p2pieces)
     @property
     def player_number(self) -> int:
         return self._player_number
@@ -41,22 +39,6 @@ class PlayerClient:
         # 各行の最初の文字を無視して二次元配列を作成
         array_2d = [list(row[1:]) for row in rows]
         return array_2d
-    
-    # def find_all_dots_with_diagonal_o(self, board_2d):
-    #     rows = len(board_2d)
-    #     cols = len(board_2d[0]) if rows > 0 else 0
-    #     result = []
-
-    #     for i in range(rows):
-    #         for j in range(cols):
-    #             if board_2d[i][j] == '.':
-    #                 # Check diagonal directions for 'o'
-    #                 if (i > 0 and j > 0 and board_2d[i-1][j-1] == 'o') or \
-    #                 (i > 0 and j < cols - 1 and board_2d[i-1][j+1] == 'o') or \
-    #                 (i < rows - 1 and j > 0 and board_2d[i+1][j-1] == 'o') or \
-    #                 (i < rows - 1 and j < cols - 1 and board_2d[i+1][j+1] == 'o'):
-    #                     result.append((i, j))
-    #     return result
 
     def create_action(self, board):
         actions: list[str]
@@ -75,8 +57,8 @@ class PlayerClient:
             print("player 1",board_2d,actions)
             turn = self.p1turn
             if turn == 0:
-                actions.append("T055")
-                self.p1pieces.remove("T")
+                actions.append("R055")
+                self.p1pieces.remove("R")
             else:
                 actions = list(
                 filter(
@@ -97,8 +79,8 @@ class PlayerClient:
             # actions = self.p2Actions
             turn = self.p2turn
             if turn == 0:
-                actions.append("U099")
-                self.p2pieces.remove("U")
+                actions.append("R088")
+                self.p2pieces.remove("R")
             else:
                 actions = list(
                 filter(
@@ -113,7 +95,10 @@ class PlayerClient:
             self.p2turn += 1
 
         if len(actions) != 0:
-            return actions[0]
+            if self.player_number == 1:
+                return actions[-1]
+            else:
+                return actions[0]
         else:
             # パスを選択
             return 'X000'

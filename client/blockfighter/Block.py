@@ -1,7 +1,7 @@
 import numpy as np
 
-from ss_player.BlockType import BlockType
-from ss_player.BlockRotation import BlockRotation
+from blockfighter.BlockType import BlockType
+from blockfighter.BlockRotation import BlockRotation
 
 
 class Block:

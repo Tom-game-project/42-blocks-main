@@ -1,7 +1,7 @@
 import numpy as np
-import ss_player.Block as Block
-import ss_player.BlockRotation as BlockRotation
-import ss_player.BlockType as BlockType
+import blockfighter.Block as Block
+import blockfighter.BlockRotation as BlockRotation
+import blockfighter.BlockType as BlockType
 import copy
 
 # putable
@@ -27,7 +27,7 @@ def genarr(strorder:str) -> tuple[bool, np.ndarray]:
     y = "123456789ABCDE".find(strorder[3])
     block = Block.Block(bt,br).block_map
     height,width = block.shape
-    if 14 < y + height or 14 < x + width:
+    if 14 <= y + height or 14 <= x + width:
         return False,None
     block_lst = block.tolist()
     return True,np.array([
