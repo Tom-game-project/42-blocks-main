@@ -14,9 +14,10 @@ class PlayerClient:
         self.p2Actions = ['A0AA', 'B098', 'N0A5', 'L659', 'K33B', 'J027', 'E2B9', 'C267', 'U07C', 'M3AD', 'O2BB', 'R41C']
         self.p1turn = 0
         self.p2turn = 0
-        self.p1pieces = [chr(i) for i in range(65,86)][::-1]
-        self.p2pieces = [chr(i) for i in range(65,86)][::-1]
-
+        self.p1pieces = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U']
+        self.p2pieces = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U']
+        random.shuffle(self.p1pieces)
+        random.shuffle(self.p2pieces)
     @property
     def player_number(self) -> int:
         return self._player_number
@@ -62,49 +63,56 @@ class PlayerClient:
         turn: int
 
         board_2d = self.string_to_2d_array(board)
-        board_2d = np.array([
-            [0 if i == "." else 1 if i == "o" else 2 if i == "x" else None for i in j]
-            for j in board_2d
-        ])
         # print(board_2d)
         # filter(lambda i:PlayerProc.putable(board, i),PlayerProc.ordergen())
+        actions = []
         if self.player_number == 1:
+            board_2d = np.array([
+                [0 if i == "." else 1 if i == "o" else 2 if i == "x" else None for i in j]
+                for j in board_2d
+            ])
             # actions = self.p1Actions
             print("player 1",board_2d,actions)
             turn = self.p1turn
             if turn == 0:
-                actions.insert(0,"T055")
-                self.p1pieces.pop(15)
+                actions.append("T055")
+                self.p1pieces.remove("T")
             else:
                 actions = list(
                 filter(
                 lambda i:PlayerProc.putable(board_2d, i),
                 PlayerProc.ordergen(
                     # [chr(i) for i in range(65,86)][::-1][self.p1turn]
-                    self.p1pieces.pop(self.p1turn)
+                    self.p1pieces.pop(0)
                 )
             )
             )
+                print("actions1",actions)
             self.p1turn += 1
         else:
+            board_2d = np.array([
+                [0 if i == "." else 2 if i == "o" else 1 if i == "x" else None for i in j]
+                for j in board_2d
+            ])
             # actions = self.p2Actions
             turn = self.p2turn
             if turn == 0:
-                actions.insert(0,"A0AA")
-                self.p2pieces.pop(0)
+                actions.append("U099")
+                self.p2pieces.remove("U")
             else:
                 actions = list(
                 filter(
                     lambda i:PlayerProc.putable(board_2d, i),
                     PlayerProc.ordergen(
                         #[chr(i) for i in range(65,86)][::-1][self.p1turn]
-                        self.p2pieces.pop(self.p2pieces)
+                        self.p2pieces.pop(0)
                 )
             )
             )
+                print("actions2",actions)
             self.p2turn += 1
 
-        if len(actions) > turn:
+        if len(actions) != 0:
             return actions[0]
         else:
             # パスを選択
