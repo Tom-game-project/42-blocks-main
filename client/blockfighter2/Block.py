@@ -1,7 +1,7 @@
 import numpy as np
 
-from blockfighter.BlockType import BlockType
-from blockfighter.BlockRotation import BlockRotation
+from blockfighter2.BlockType import BlockType
+from blockfighter2.BlockRotation import BlockRotation
 
 
 class Block:

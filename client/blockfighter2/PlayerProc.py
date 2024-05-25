@@ -1,7 +1,7 @@
 import numpy as np
-import blockfighter.Block as Block
-import blockfighter.BlockRotation as BlockRotation
-import blockfighter.BlockType as BlockType
+import blockfighter2.Block as Block
+import blockfighter2.BlockRotation as BlockRotation
+import blockfighter2.BlockType as BlockType
 import copy
 
 # putable
@@ -27,7 +27,7 @@ def genarr(strorder:str) -> tuple[bool, np.ndarray]:
     y = "123456789ABCDE".find(strorder[3])
     block = Block.Block(bt,br).block_map
     height,width = block.shape
-    if 14 <= y + height or 14 <= x + width:
+    if 14 < y + height or 14 < x + width:
         return False,None
     block_lst = block.tolist()
     return True,np.array([
@@ -67,10 +67,10 @@ def is_vertex_duplicate(board:np.ndarray,order:np.ndarray) -> bool:
                 
                 # Check if there's no '1' in the four adjacent cells
                 no_adjacent_1 = (
-                    (i <= 0 or order[i-1][j] != 1) and  # up
-                    (i >= 14 - 1 or order[i+1][j] != 1) and  # down
-                    (j <= 0 or order[i][j-1] != 1) and  # left
-                    (j >= 14 - 1 or order[i][j+1] != 1)  # right
+                    (i != 0 and order[i-1][j] != 1) and  # up
+                    (i != 14 - 1 and order[i+1][j] != 1) and  # down
+                    (j != 0 and order[i][j-1] != 1) and  # left
+                    (j != 14 - 1 and order[i][j+1] != 1)  # right
                 )
                 
                 flag = (board[i][j] == 1)

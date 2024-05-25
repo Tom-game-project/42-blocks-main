@@ -2,7 +2,7 @@ from __future__ import annotations
 import asyncio
 import websockets
 import random
-import blockfighter.PlayerProc as PlayerProc
+import blockfighter2.PlayerProc as PlayerProc
 import numpy as np
 
 class PlayerClient:
