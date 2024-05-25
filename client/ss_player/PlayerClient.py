@@ -1,7 +1,9 @@
 from __future__ import annotations
 import asyncio
 import websockets
-
+import random
+import ss_player.PlayerProc as PlayerProc
+import numpy as np
 
 class PlayerClient:
     def __init__(self, player_number: int, socket: websockets.WebSocketClientProtocol, loop: asyncio.AbstractEventLoop):
@@ -12,6 +14,8 @@ class PlayerClient:
         self.p2Actions = ['A0AA', 'B098', 'N0A5', 'L659', 'K33B', 'J027', 'E2B9', 'C267', 'U07C', 'M3AD', 'O2BB', 'R41C']
         self.p1turn = 0
         self.p2turn = 0
+        self.p1pieces = [chr(i) for i in range(65,86)][::-1]
+        self.p2pieces = [chr(i) for i in range(65,86)][::-1]
 
     @property
     def player_number(self) -> int:
@@ -53,58 +57,55 @@ class PlayerClient:
     #                     result.append((i, j))
     #     return result
 
-    def find_all_dots_with_diagonal_o(self, board_2d):
-        rows = len(board_2d)
-        cols = len(board_2d[0]) if rows > 0 else 0
-        result = []
-
-        for i in range(rows):
-            for j in range(cols):
-                if board_2d[i][j] == '.':
-                    # Check diagonal directions for 'o'
-                    diagonal_o = (
-                        (i > 0 and j > 0 and board_2d[i-1][j-1] == 'o') or
-                        (i > 0 and j < cols - 1 and board_2d[i-1][j+1] == 'o') or
-                        (i < rows - 1 and j > 0 and board_2d[i+1][j-1] == 'o') or
-                        (i < rows - 1 and j < cols - 1 and board_2d[i+1][j+1] == 'o')
-                    )
-                    
-                    # Check if there's no 'o' in the four adjacent cells
-                    no_adjacent_o = (
-                        (i <= 0 or board_2d[i-1][j] != 'o') and  # up
-                        (i >= rows - 1 or board_2d[i+1][j] != 'o') and  # down
-                        (j <= 0 or board_2d[i][j-1] != 'o') and  # left
-                        (j >= cols - 1 or board_2d[i][j+1] != 'o')  # right
-                    )
-                    
-                    if diagonal_o and no_adjacent_o:
-                        result.append((i, j))
-                        
-        return result
-
     def create_action(self, board):
         actions: list[str]
         turn: int
 
-        print("now board\n")
-        print("aaa",board[5])
-        print(type(board))
         board_2d = self.string_to_2d_array(board)
+        board_2d = np.array([
+            [0 if i == "." else 1 if i == "o" else 2 if i == "x" else None for i in j]
+            for j in board_2d
+        ])
         # print(board_2d)
-        put_available = self.find_all_dots_with_diagonal_o(board_2d)
-        print(f"Available positions to put: {put_available}")
-
+        # filter(lambda i:PlayerProc.putable(board, i),PlayerProc.ordergen())
         if self.player_number == 1:
-            actions = self.p1Actions
+            # actions = self.p1Actions
+            print("player 1",board_2d,actions)
             turn = self.p1turn
+            if turn == 0:
+                actions.insert(0,"T055")
+                self.p1pieces.pop(15)
+            else:
+                actions = list(
+                filter(
+                lambda i:PlayerProc.putable(board_2d, i),
+                PlayerProc.ordergen(
+                    # [chr(i) for i in range(65,86)][::-1][self.p1turn]
+                    self.p1pieces.pop(self.p1turn)
+                )
+            )
+            )
             self.p1turn += 1
         else:
-            actions = self.p2Actions
+            # actions = self.p2Actions
             turn = self.p2turn
+            if turn == 0:
+                actions.insert(0,"A0AA")
+                self.p2pieces.pop(0)
+            else:
+                actions = list(
+                filter(
+                    lambda i:PlayerProc.putable(board_2d, i),
+                    PlayerProc.ordergen(
+                        #[chr(i) for i in range(65,86)][::-1][self.p1turn]
+                        self.p2pieces.pop(self.p2pieces)
+                )
+            )
+            )
             self.p2turn += 1
 
         if len(actions) > turn:
-            return actions[turn]
+            return actions[0]
         else:
             # パスを選択
             return 'X000'

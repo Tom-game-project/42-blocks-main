@@ -1,5 +1,7 @@
 import numpy as np
-import Block, BlockRotation, BlockType
+import ss_player.Block as Block
+import ss_player.BlockRotation as BlockRotation
+import ss_player.BlockType as BlockType
 import copy
 
 # putable
@@ -107,14 +109,15 @@ def is_edge_duplicate(board:np.ndarray,order:np.ndarray) -> bool:
 
 
 
-def ordergen():
-    type_ = [chr(i) for i in range(65,86)]
-    rotate_ = [str(i) for i in range(8)]
+def ordergen(arg):
+    # type_ = [chr(i) for i in range(65,86)]
+    # rotate_ = map(str,range(8))
     x_ = "123456789ABCDE"
     y_ = "123456789ABCDE"
 
-    for i in type_:
-        for j in rotate_:
+    # map(chr,range(65,86))
+    for i in arg:
+        for j in map(str,range(8)):
             for k in x_:
                 for l in y_:
                     yield i + j + k + l
