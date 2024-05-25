@@ -52,6 +52,7 @@ def is_vertex_duplicate(board:np.array,order:np.ndarray) -> bool:
                 
                 if diagonal_1 and no_adjacent_1 and flag:
                     result.append((i, j))
+                    return True
     
     return result
 
@@ -62,19 +63,17 @@ def is_edge_duplicate(board:np.array,order:np.ndarray) -> bool:
         for j in range(14):
             if order[i, j] == 0:
                 # Check if there's no '1' in the four adjacent cells
-                no_adjacent_2 = (
-                    (i <= 0 or order[i-1][j] == 1) or  # up
-                    (i >= 14 - 1 or order[i+1][j] == 1) or  # down
-                    (j <= 0 or order[i][j-1] == 1) or  # left
-                    (j >= 14 - 1 or order[i][j+1] == 1)  # right
+                has_adjacent_1 = (
+                    (i > 0 and order[i-1][j] == 1) or  # up
+                    (i < 14 - 1 and order[i+1][j] == 1) or  # down
+                    (j > 0 and order[i][j-1] == 1) or  # left
+                    (j < 14 - 1 and order[i][j+1] == 1)  # right
                 )
-                
                 flag = (board[i][j] == 1)
                 
-                # if no_adjacent_1 and flag:
-                #     result.append((i, j))
-                if no_adjacent_2:
+                if has_adjacent_1 and flag:
                     result2.append((i, j))
+                    return False
     
     return result2
 
