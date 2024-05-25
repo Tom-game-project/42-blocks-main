@@ -5,12 +5,11 @@ setup(
     name="blocks_duo_blockfighter2",
     version="0.0.1",
     description="smartscape blocks-duo player package",
-    author="Yoshitomi",
+    author="blockfighter",
     packages=find_packages(),
     install_requires=install_requirements,
     entry_points={
         "console_scripts": [
-            "blockfighter=blockfighter.main:main",
             "blockfighter2=blockfighter2.main:main",
         ]
     },

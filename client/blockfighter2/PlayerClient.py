@@ -12,8 +12,8 @@ class PlayerClient:
         self._player_number = player_number
         self.p1turn = 0
         self.p2turn = 0
-        self.p1pieces = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U'][::-1]
-        self.p2pieces = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U'][::-1]
+        self.p1pieces = ['J', 'E', 'K', 'A', 'B', 'C', 'H', 'D', 'I', 'G', 'F', 'M', 'Q', 'O', 'N', 'L', 'P', 'S', 'T', 'U', 'R'][::-1]
+        self.p2pieces = ['J', 'E', 'K', 'A', 'B', 'C', 'H', 'D', 'I', 'G', 'F', 'M', 'Q', 'O', 'N', 'L', 'P', 'S', 'T', 'U', 'R'][::-1]
         #random.shuffle(self.p1pieces)
         #random.shuffle(self.p2pieces)
 
@@ -65,7 +65,7 @@ class PlayerClient:
                 filter(
                 lambda i:PlayerProc.putable(board_2d, i),
                     PlayerProc.ordergen(
-                    self.p1pieces.pop(0)
+                    self.p1pieces[0]
                         )
                     )
                 )
@@ -96,7 +96,7 @@ class PlayerClient:
                     lambda i:PlayerProc.putable(board_2d, i),
                     PlayerProc.ordergen(
                         #[chr(i) for i in range(65,86)][::-1][self.p1turn]
-                        self.p2pieces.pop(0)
+                        self.p2pieces[0]
                 )
             )
             )
