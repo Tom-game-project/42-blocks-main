@@ -1,31 +1,29 @@
 import numpy as np
-from client.ss_player import Block, BlockRotation
-from client.ss_player import BlockType
+import Block, BlockRotation, BlockType
 import copy
 
 # putable
 def putable(board:np.ndarray,strorder:str) -> bool:
     # 命令が有効
     check,order = genarr(strorder)
-
     if not check:
         return False
     if not is_piece_duplicate(board, order):
         return False
-    if is_vertex_duplicate(board, order):
+    if not is_vertex_duplicate(board, order):
         return False 
-    if not is_edge_duplicate(board, order):
+    if is_edge_duplicate(board, order):
         return False 
     return True
 
 
 def genarr(strorder:str) -> tuple[bool, np.ndarray]:
     # U034
-    bt = BlockType(strorder[0])     # 一文字目
-    br = BlockRotation(strorder[1]) # 二文字目
+    bt = BlockType.BlockType(strorder[0])     # 一文字目
+    br = BlockRotation.BlockRotation(int(strorder[1])) # 二文字目
     x = "123456789ABCDE".find(strorder[2])
     y = "123456789ABCDE".find(strorder[3])
-    block: np.ndarray = Block(bt,br).block_map()
+    block = Block.Block(bt,br).block_map
     height,width = block.shape
     if 14 < y + height or 14 < x + width:
         return False,None
@@ -41,16 +39,17 @@ def genarr(strorder:str) -> tuple[bool, np.ndarray]:
         for i in range(14)
     ])        
 
-def is_piece_duplicate(board:np.array,order:np.ndarray) -> bool:
+def is_piece_duplicate(board:np.ndarray,order:np.ndarray) -> bool:
     # 行列のなかで0以外の要素をすべて1に変換する
-    board[board != 0] = 1
+    tmpboard = copy.deepcopy(board)
+    tmpboard[tmpboard!= 0] = 1
     # orderで受け取った列をボードに足す
-    board += order
+    tmpboard += order
     # 2以上の要素があるかどうかをチェックする
-    return not np.any(board >= 2)
+    return not np.any(tmpboard >= 2)
 
 
-def is_vertex_duplicate(board:np.array,order:np.ndarray) -> bool:
+def is_vertex_duplicate(board:np.ndarray,order:np.ndarray) -> bool:
     result = []
     # 頂点を自分のピースと共有している
     for i in range(14):
@@ -76,13 +75,15 @@ def is_vertex_duplicate(board:np.array,order:np.ndarray) -> bool:
                 
                 if diagonal_1 and no_adjacent_1 and flag:
                     result.append((i, j))
+                    # print(result)
                     return True
     
-    return result
+    # print(result)
+    return False
 
 
-def is_edge_duplicate(board:np.array,order:np.ndarray) -> bool:
-    result2 = []
+def is_edge_duplicate(board:np.ndarray,order:np.ndarray) -> bool:
+    # result2 = []
     # 辺を自分のピースと共有している
     for i in range(14):
         for j in range(14):
@@ -97,17 +98,32 @@ def is_edge_duplicate(board:np.array,order:np.ndarray) -> bool:
                 flag = (board[i][j] == 1)
                 
                 if has_adjacent_1 and flag:
-                    result2.append((i, j))
-                    return False
+                    # result2.append((i, j))
+                    return True
     
-    return result2
+    # return result2
+    # print(result2)
+    return False
 
+
+
+def ordergen():
+    type_ = [chr(i) for i in range(65,86)]
+    rotate_ = [str(i) for i in range(8)]
+    x_ = "123456789ABCDE"
+    y_ = "123456789ABCDE"
+
+    for i in type_:
+        for j in rotate_:
+            for k in x_:
+                for l in y_:
+                    yield i + j + k + l
 
 
 # 使用例
 
 if __name__ == "__main__":
-    order2 = np.array([
+    board = np.array([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -123,24 +139,16 @@ if __name__ == "__main__":
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
     )
-    order = np.array([
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-    )
-    result = is_vertex_duplicate(order,order2)
-    result2 = is_edge_duplicate(order,order2)
-    print(result)
-    print(result2)
-    
+    rlist = []
+    # print(lst[0:100])
+    # for i in ordergen():
+    #     # print(board)
+    #     if putable(board, i):
+    #         rlist.append(i)
+    rlist = filter(lambda i:putable(board, i),ordergen())
+    #print(rlist)
+    for i in rlist:
+        print(i,end=",")
+    # print("Q054" in lst)
+    # print("putable",putable(board,"Q054"))
+    # print("putable",putable(board,"Q054"))
